@@ -1,0 +1,45 @@
+import { Link } from 'react-router-dom';
+import { Archive, Clock, History, Tag } from 'lucide-react';
+import { formatRelative } from '../../utils/formatDate.js';
+
+export const NoteCard = ({ note }) => (
+  <article className="group card block transition hover:border-primary-300 hover:shadow-md dark:hover:border-primary-700">
+    <Link to={`/notes/${note._id}/edit`} className="block">
+      <header className="flex items-start justify-between gap-2">
+        <h3 className="line-clamp-1 font-semibold text-gray-900 group-hover:text-primary-600 dark:text-gray-100 dark:group-hover:text-primary-400">
+          {note.title}
+        </h3>
+        {note.isArchived && <Archive className="h-4 w-4 shrink-0 text-amber-500" />}
+      </header>
+      <p className="mt-2 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
+        {note.content || 'No content'}
+      </p>
+      {note.tags?.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {note.tags.slice(0, 3).map((tag) => (
+            <span
+              key={tag}
+              className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+            >
+              <Tag className="h-3 w-3" />
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+      <footer className="mt-4 flex items-center justify-between text-xs text-gray-400">
+        <span className="flex items-center gap-1">
+          <Clock className="h-3.5 w-3.5" />
+          {formatRelative(note.updatedAt)}
+        </span>
+      </footer>
+    </Link>
+    <Link
+      to={`/notes/${note._id}/history`}
+      className="mt-2 flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400"
+    >
+      <History className="h-3.5 w-3.5" />
+      Version history
+    </Link>
+  </article>
+);
