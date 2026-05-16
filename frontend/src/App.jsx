@@ -1,7 +1,13 @@
 import { AppRoutes } from './routes/AppRoutes.jsx';
+import { AuthSessionHandler } from './components/auth/AuthSessionHandler.jsx';
 
 function App() {
-  return <AppRoutes />;
+  return (
+    <>
+      <AuthSessionHandler />
+      <AppRoutes />
+    </>
+  );
 }
 
 export default App;

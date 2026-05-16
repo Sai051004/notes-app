@@ -13,7 +13,8 @@ export const DiffHighlight = ({ oldText = '', newText = '', className = '' }) =>
   if (!hasDiffChanges(segments)) {
     return (
       <p className={`text-sm text-gray-500 dark:text-gray-400 ${className}`}>
-        No changes from the previous version.
+        No title or content changes compared to the previous version (tags or archive may have
+        changed).
       </p>
     );
   }

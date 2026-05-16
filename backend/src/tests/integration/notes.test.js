@@ -99,6 +99,16 @@ describe('Notes API (assignment)', () => {
       expect(res.status).toBe(200);
       expect(res.body.title).toBe('Updated');
       expect(res.body.content).toBe('V2');
+
+      const historyRes = await request(app)
+        .get(`/notes/${createRes.body.id}/history`)
+        .set(authHeader());
+
+      expect(historyRes.status).toBe(200);
+      const versions = historyRes.body.data.sort((a, b) => a.versionNumber - b.versionNumber);
+      expect(versions).toHaveLength(2);
+      expect(versions[1].title).toBe('Updated');
+      expect(versions[1].content).toBe('V2');
     });
   });
 

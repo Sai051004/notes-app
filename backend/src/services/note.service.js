@@ -109,12 +109,12 @@ class NoteService {
       throw new AppError('You do not have permission to edit this note', HTTP_STATUS.FORBIDDEN);
     }
 
-    await this.#createVersion(existing, uid, 'update');
-
     const note = await noteRepository.update(noteId, {
       ...data,
       $inc: { versionCount: 1 },
     });
+
+    await this.#createVersion(note, uid, 'update');
 
     return note;
   }

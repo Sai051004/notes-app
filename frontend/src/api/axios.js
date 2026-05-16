@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { toast } from 'react-toastify';
 import { API_BASE_URL, STORAGE_KEYS } from '../constants/index.js';
 
 const api = axios.create({
@@ -30,8 +29,7 @@ api.interceptors.response.use(
         window.location.pathname.includes('/login') ||
         window.location.pathname.includes('/register');
       if (!isAuthPage && hadSession) {
-        toast.info('Session expired. Please sign in again.');
-        window.location.href = '/login';
+        window.dispatchEvent(new CustomEvent('notes:session-expired'));
       }
     }
 

@@ -154,7 +154,9 @@ const NoteHistoryPage = () => {
                         Compared to {prevLabel}
                         {!previousLoaded &&
                           ' · load earlier pages to compare with the full previous version'}
-                        {previousLoaded && !changed && ' · no textual changes recorded'}
+                        {previousLoaded &&
+                          !changed &&
+                          ' · same title/content as previous (check tags/archive on the note)'}
                       </p>
                       {previousLoaded ? (
                         <>

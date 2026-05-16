@@ -17,7 +17,6 @@ export const AuthProvider = ({ children }) => {
     if (token && isTokenExpired(token)) {
       localStorage.removeItem(STORAGE_KEYS.TOKEN);
       localStorage.removeItem(STORAGE_KEYS.USER);
-      toast.info('Session expired. Please sign in again.');
       setLoading(false);
       return;
     }
