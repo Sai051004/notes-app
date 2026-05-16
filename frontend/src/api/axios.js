@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { API_BASE_URL, STORAGE_KEYS } from '../constants/index.js';
 
 const api = axios.create({
@@ -22,12 +23,14 @@ api.interceptors.response.use(
       error.response?.data?.message || error.message || 'Something went wrong';
 
     if (error.response?.status === 401) {
+      const hadSession = !!localStorage.getItem(STORAGE_KEYS.TOKEN);
       localStorage.removeItem(STORAGE_KEYS.TOKEN);
       localStorage.removeItem(STORAGE_KEYS.USER);
       const isAuthPage =
         window.location.pathname.includes('/login') ||
         window.location.pathname.includes('/register');
-      if (!isAuthPage) {
+      if (!isAuthPage && hadSession) {
+        toast.info('Session expired. Please sign in again.');
         window.location.href = '/login';
       }
     }

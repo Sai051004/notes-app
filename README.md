@@ -295,7 +295,9 @@ App: http://localhost:5173
 
 > **Important:** After pulling API changes, **restart the backend** (`npm start` or `npm run dev`). If login shows `Route not found: /login`, the old server process is usually still running.
 
-> **Page refresh / 401 JSON on `/notes/...`:** The frontend must call the API at `http://localhost:5000` (see `VITE_API_URL`). Do not proxy `/notes` in Vite — that path is used by React Router. Refreshing `localhost:5173/notes/.../history` with a proxy sends a browser request to the API **without** a JWT and shows `Not authorized. Please log in.` as raw JSON.
+> **Page refresh / 401 JSON on `/notes/...`:** The frontend must call the API at `http://localhost:5000` (see `VITE_API_URL`). Do not proxy `/notes` in Vite — that path is used by React Router.
+>
+> **Vercel `404: NOT_FOUND` on `/notes/.../history`:** Deploy with `frontend/vercel.json` (SPA rewrite to `index.html`). Without it, refresh on deep links fails even when logged in.
 
 ### 3. Docker (full stack)
 
