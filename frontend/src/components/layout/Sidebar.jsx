@@ -28,9 +28,9 @@ export const Sidebar = ({ onNavigate }) => {
   const handleNav = () => onNavigate?.();
 
   return (
-    <aside className="flex h-full w-64 flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-      <header className="flex items-center gap-2 border-b border-gray-200 px-5 py-5 dark:border-gray-800">
-        <FileText className="h-7 w-7 text-primary-600" />
+    <aside className="flex h-full w-64 flex-col app-shell-border-r bg-white dark:bg-gray-900">
+      <header className="shell-header gap-2 px-5">
+        <FileText className="h-7 w-7 shrink-0 text-primary-600" />
         <span className="text-lg font-bold text-gray-900 dark:text-white">Notes</span>
       </header>
 
@@ -61,7 +61,7 @@ export const Sidebar = ({ onNavigate }) => {
         </NavLink>
       </nav>
 
-      <footer className="border-t border-gray-200 p-4 dark:border-gray-800">
+      <footer className="app-shell-border-t p-4">
         <p className="mb-3 truncate px-3 text-xs text-gray-500">{user?.email}</p>
         <button
           type="button"
