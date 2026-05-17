@@ -100,9 +100,13 @@ const EditNotePage = () => {
           </>
         }
       />
-      <section className="flex-1 overflow-y-auto p-4 lg:p-8">
-        <section className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-3">
-          <section className="card lg:col-span-2">
+      <section className="flex-1 overflow-y-auto p-4 lg:p-6 xl:p-8">
+        <section
+          className={`mx-auto grid w-full max-w-6xl gap-6 ${
+            showShare ? 'lg:grid-cols-[minmax(0,1fr)_320px]' : 'lg:grid-cols-1'
+          }`}
+        >
+          <section className="card min-w-0">
             <NoteForm
               defaultValues={{
                 title: note.title,

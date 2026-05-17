@@ -28,8 +28,8 @@ const CreateNotePage = () => {
   return (
     <section className="flex flex-1 flex-col overflow-hidden">
       <Header title="Create Note" subtitle="Add a new note" onMenuClick={openSidebar} />
-      <section className="flex-1 overflow-y-auto p-4 lg:p-8">
-        <section className="card mx-auto max-w-3xl">
+      <section className="flex-1 overflow-y-auto p-4 lg:p-6 xl:p-8">
+        <section className="card mx-auto w-full max-w-6xl">
           <NoteForm onSubmit={handleSubmit} loading={loading} submitLabel="Create Note" />
         </section>
       </section>

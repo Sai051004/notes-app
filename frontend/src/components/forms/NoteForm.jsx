@@ -57,8 +57,8 @@ export const NoteForm = ({ defaultValues, onSubmit, loading, submitLabel = 'Save
         </label>
         <textarea
           id="content"
-          rows={12}
-          className="input-field resize-y"
+          rows={18}
+          className="input-field min-h-[min(70vh,720px)] resize-y"
           placeholder="Write your note..."
           {...register('content')}
         />
