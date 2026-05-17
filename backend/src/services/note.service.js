@@ -222,7 +222,12 @@ class NoteService {
       throw new AppError('Version not found', HTTP_STATUS.NOT_FOUND);
     }
 
-    await this.#createVersion(note, uid, 'update');
+    const alreadyAtVersion =
+      note.title === version.title && (note.content ?? '') === (version.content ?? '');
+
+    if (alreadyAtVersion) {
+      return note;
+    }
 
     const restored = await noteRepository.update(noteId, {
       title: version.title,
@@ -232,8 +237,8 @@ class NoteService {
 
     await noteVersionRepository.create({
       noteId,
-      title: version.title,
-      content: version.content,
+      title: restored.title,
+      content: restored.content,
       versionNumber: (await noteVersionRepository.getLatestVersionNumber(noteId)) + 1,
       updatedBy: uid,
       changeType: 'restore',
