@@ -42,12 +42,45 @@ class NoteService {
     return versionNumber;
   }
 
+  #normalizeTags(tags) {
+    return [...(tags || [])].map((t) => String(t).trim()).filter(Boolean).sort();
+  }
+
+  #tagsEqual(a, b) {
+    const left = this.#normalizeTags(a);
+    const right = this.#normalizeTags(b);
+    return left.length === right.length && left.every((tag, i) => tag === right[i]);
+  }
+
+  #contentFieldsChanged(existing, data) {
+    if (data.title !== undefined && data.title !== existing.title) return true;
+    if (data.content !== undefined && (data.content ?? '') !== (existing.content ?? '')) return true;
+    if (data.tags !== undefined && !this.#tagsEqual(data.tags, existing.tags)) return true;
+    return false;
+  }
+
+  #archiveChanged(existing, data) {
+    if (data.isArchived === undefined) return false;
+    return Boolean(data.isArchived) !== Boolean(existing.isArchived);
+  }
+
+  #hasAnyFieldChange(existing, data) {
+    return this.#contentFieldsChanged(existing, data) || this.#archiveChanged(existing, data);
+  }
+
   async getOwnedNotes(userId, query = {}) {
     const uid = toUserId(userId);
     const { page, limit, skip } = parsePagination(query);
-    const { sort, order } = query;
+    const { archived, tag, sort, order } = query;
 
-    return noteRepository.findAllOwnedByUser(uid, { skip, limit, sort, order });
+    return noteRepository.findAllOwnedByUser(uid, {
+      skip,
+      limit,
+      sort,
+      order,
+      archived: archived !== undefined ? archived : false,
+      tag,
+    });
   }
 
   async getNotes(userId, query) {
@@ -109,12 +142,22 @@ class NoteService {
       throw new AppError('You do not have permission to edit this note', HTTP_STATUS.FORBIDDEN);
     }
 
-    const note = await noteRepository.update(noteId, {
-      ...data,
-      $inc: { versionCount: 1 },
-    });
+    if (!this.#hasAnyFieldChange(existing, data)) {
+      return existing;
+    }
 
-    await this.#createVersion(note, uid, 'update');
+    const versionWorthy = this.#contentFieldsChanged(existing, data);
+    const updatePayload = { ...data };
+
+    if (versionWorthy) {
+      updatePayload.$inc = { versionCount: 1 };
+    }
+
+    const note = await noteRepository.update(noteId, updatePayload);
+
+    if (versionWorthy) {
+      await this.#createVersion(note, uid, 'update');
+    }
 
     return note;
   }

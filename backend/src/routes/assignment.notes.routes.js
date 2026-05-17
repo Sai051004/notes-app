@@ -15,7 +15,7 @@ const router = Router();
 router.use(protect);
 
 router.get('/shared', validate(noteQuerySchema, 'query'), extendedNoteController.getSharedNotes);
-router.get('/', noteController.getNotes);
+router.get('/', validate(noteQuerySchema, 'query'), noteController.getNotes);
 router.post('/', validate(assignmentCreateNoteSchema), noteController.createNote);
 router.get('/:id/history', validate(noteQuerySchema, 'query'), extendedNoteController.getVersionHistory);
 router.post('/:id/restore/:versionId', extendedNoteController.restoreVersion);

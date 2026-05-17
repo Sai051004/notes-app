@@ -22,10 +22,15 @@ class NoteRepository {
       .lean();
   }
 
-  async findAllOwnedByUser(userId, { skip, limit, sort = 'updatedAt', order = 'desc' }) {
+  async findAllOwnedByUser(userId, { skip, limit, sort = 'updatedAt', order = 'desc', archived, tag }) {
+    const filter = { owner: userId };
+
+    if (archived !== undefined) filter.isArchived = archived;
+    if (tag) filter.tags = tag;
+
     const sortField = { [sort]: order === 'asc' ? 1 : -1 };
 
-    return Note.find({ owner: userId }).sort(sortField).skip(skip).limit(limit).lean();
+    return Note.find(filter).sort(sortField).skip(skip).limit(limit).lean();
   }
 
   async findAllForUser(userId, { skip, limit, archived, tag, sort, order }) {

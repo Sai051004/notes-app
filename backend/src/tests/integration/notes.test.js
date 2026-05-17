@@ -110,6 +110,70 @@ describe('Notes API (assignment)', () => {
       expect(versions[1].title).toBe('Updated');
       expect(versions[1].content).toBe('V2');
     });
+
+    it('should not create a version when saving unchanged content', async () => {
+      const createRes = await request(app)
+        .post('/notes')
+        .set(authHeader())
+        .send({ title: 'Stable', content: 'Same' });
+
+      await request(app)
+        .put(`/notes/${createRes.body.id}`)
+        .set(authHeader())
+        .send({ title: 'Stable', content: 'Same' });
+
+      const historyRes = await request(app)
+        .get(`/notes/${createRes.body.id}/history`)
+        .set(authHeader());
+
+      expect(historyRes.status).toBe(200);
+      expect(historyRes.body.data).toHaveLength(1);
+    });
+
+    it('should not create a version when only archiving', async () => {
+      const createRes = await request(app)
+        .post('/notes')
+        .set(authHeader())
+        .send({ title: 'Archive me', content: 'Body' });
+
+      await request(app)
+        .put(`/notes/${createRes.body.id}`)
+        .set(authHeader())
+        .send({ isArchived: true });
+
+      const historyRes = await request(app)
+        .get(`/notes/${createRes.body.id}/history`)
+        .set(authHeader());
+
+      expect(historyRes.status).toBe(200);
+      expect(historyRes.body.data).toHaveLength(1);
+    });
+  });
+
+  describe('GET /notes archived filter', () => {
+    it('should hide archived notes from the default list', async () => {
+      const createRes = await request(app)
+        .post('/notes')
+        .set(authHeader())
+        .send({ title: 'To archive', content: 'X' });
+
+      await request(app)
+        .put(`/notes/${createRes.body.id}`)
+        .set(authHeader())
+        .send({ isArchived: true });
+
+      const activeRes = await request(app).get('/notes').set(authHeader());
+      expect(activeRes.status).toBe(200);
+      expect(activeRes.body.some((n) => n.id === createRes.body.id)).toBe(false);
+
+      const archivedRes = await request(app)
+        .get('/notes')
+        .query({ archived: true })
+        .set(authHeader());
+
+      expect(archivedRes.status).toBe(200);
+      expect(archivedRes.body.some((n) => n.id === createRes.body.id)).toBe(true);
+    });
   });
 
   describe('DELETE /notes/:id', () => {
