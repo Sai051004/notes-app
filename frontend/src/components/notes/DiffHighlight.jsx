@@ -31,10 +31,10 @@ export const DiffHighlight = ({ oldText = '', newText = '', className = '' }) =>
 };
 
 export const DiffField = ({ label, oldText, newText }) => (
-  <section className="space-y-2">
+  <section className="min-h-[100px] space-y-3">
     <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
       {label}
     </h4>
-    <DiffHighlight oldText={oldText} newText={newText} />
+    <DiffHighlight oldText={oldText} newText={newText} className="text-base" />
   </section>
 );

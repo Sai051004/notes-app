@@ -94,7 +94,7 @@ const NoteHistoryPage = () => {
           <EmptyState title="No history" description="Version history will appear after edits" />
         )}
         {!loading && !error && versions.length > 0 && (
-          <section className="mx-auto max-w-3xl space-y-4">
+          <section className="mx-auto w-full max-w-5xl space-y-6">
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Click a version to see what changed compared to the previous one.{' '}
               <span className="text-emerald-700 dark:text-emerald-400">Green</span> = added,{' '}
@@ -121,7 +121,7 @@ const NoteHistoryPage = () => {
                       toggleVersion(version._id);
                     }
                   }}
-                  className={`card cursor-pointer transition ring-primary-500 hover:border-primary-300 dark:hover:border-primary-700 ${
+                  className={`card min-h-[240px] cursor-pointer p-8 transition ring-primary-500 hover:border-primary-300 dark:hover:border-primary-700 ${
                     isSelected ? 'border-primary-400 ring-2 ring-primary-500/30' : ''
                   }`}
                 >
@@ -133,9 +133,11 @@ const NoteHistoryPage = () => {
                           className={`h-4 w-4 transition ${isSelected ? 'rotate-180' : ''}`}
                         />
                       </p>
-                      <h3 className="mt-1 font-semibold">{version.title}</h3>
+                      <h3 className="mt-2 text-lg font-semibold">{version.title}</h3>
                       {!isSelected && (
-                        <p className="mt-2 line-clamp-2 text-sm text-gray-500">{version.content}</p>
+                        <p className="mt-3 line-clamp-4 text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                          {version.content}
+                        </p>
                       )}
                     </section>
                     <Button
@@ -149,7 +151,7 @@ const NoteHistoryPage = () => {
                   </header>
 
                   {isSelected && (
-                    <section className="mt-5 space-y-5 border-t border-gray-200 pt-5 dark:border-gray-700">
+                    <section className="mt-6 space-y-6 border-t border-gray-200 pt-6 dark:border-gray-700">
                       <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
                         Compared to {prevLabel}
                         {!previousLoaded &&
