@@ -79,6 +79,28 @@ const openApiBase = {
     },
   },
   paths: {
+    '/': {
+      get: {
+        tags: ['Health'],
+        summary: 'API status',
+        responses: {
+          200: {
+            description: 'API is running',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     '/register': {
       post: {
         tags: ['Auth'],

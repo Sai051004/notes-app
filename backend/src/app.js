@@ -52,6 +52,13 @@ app.use(mongoSanitize());
 
 const getBaseUrl = (req) => `${req.protocol}://${req.get('host')}`;
 
+app.get('/', (_req, res) => {
+  res.json({
+    success: true,
+    message: 'Notes App API is running successfully',
+  });
+});
+
 app.get('/health', (_req, res) => {
   sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() }, 'Service is healthy');
 });
