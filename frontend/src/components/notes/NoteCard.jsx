@@ -2,16 +2,27 @@ import { Link } from 'react-router-dom';
 import { Archive, Clock, History, Tag } from 'lucide-react';
 import { formatRelative } from '../../utils/formatDate.js';
 
-export const NoteCard = ({ note }) => (
-  <article className="group card block transition hover:border-primary-300 hover:shadow-md dark:hover:border-primary-700">
-    <Link to={`/notes/${note._id}/edit`} className="block">
+export const NoteCard = ({ note, square = false }) => (
+  <article
+    className={`group card flex flex-col transition hover:border-primary-300 hover:shadow-md dark:hover:border-primary-700 ${
+      square ? 'aspect-square min-h-[300px] w-full' : ''
+    }`}
+  >
+    <Link
+      to={`/notes/${note._id}/edit`}
+      className={square ? 'flex min-h-0 flex-1 flex-col' : 'block'}
+    >
       <header className="flex items-start justify-between gap-2">
-        <h3 className="line-clamp-1 font-semibold text-gray-900 group-hover:text-primary-600 dark:text-gray-100 dark:group-hover:text-primary-400">
+        <h3 className="line-clamp-2 font-semibold text-gray-900 group-hover:text-primary-600 dark:text-gray-100 dark:group-hover:text-primary-400">
           {note.title}
         </h3>
         {note.isArchived && <Archive className="h-4 w-4 shrink-0 text-amber-500" />}
       </header>
-      <p className="mt-2 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
+      <p
+        className={`mt-2 text-sm text-gray-500 dark:text-gray-400 ${
+          square ? 'line-clamp-5 flex-1' : 'line-clamp-2'
+        }`}
+      >
         {note.content || 'No content'}
       </p>
       {note.tags?.length > 0 && (

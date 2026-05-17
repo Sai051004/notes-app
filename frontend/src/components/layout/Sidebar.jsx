@@ -21,6 +21,18 @@ const navLinkClass = ({ isActive }) =>
       : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
   }`;
 
+const isDashboardActive = (_match, { pathname, search }) => {
+  if (pathname !== '/') return false;
+  const params = new URLSearchParams(search);
+  return params.get('archived') !== 'true';
+};
+
+const isArchivedActive = (_match, { pathname, search }) => {
+  if (pathname !== '/') return false;
+  const params = new URLSearchParams(search);
+  return params.get('archived') === 'true';
+};
+
 export const Sidebar = ({ onNavigate }) => {
   const { user, logout } = useAuth();
   const { darkMode, toggleTheme } = useTheme();
@@ -35,7 +47,7 @@ export const Sidebar = ({ onNavigate }) => {
       </header>
 
       <nav className="flex-1 space-y-1 overflow-y-auto p-4">
-        <NavLink to="/" end className={navLinkClass} onClick={handleNav}>
+        <NavLink to="/" end className={navLinkClass} isActive={isDashboardActive} onClick={handleNav}>
           <LayoutDashboard className="h-5 w-5" />
           Dashboard
         </NavLink>
@@ -51,7 +63,12 @@ export const Sidebar = ({ onNavigate }) => {
           <Search className="h-5 w-5" />
           Search
         </NavLink>
-        <NavLink to="/?archived=true" className={navLinkClass} onClick={handleNav}>
+        <NavLink
+          to="/?archived=true"
+          className={navLinkClass}
+          isActive={isArchivedActive}
+          onClick={handleNav}
+        >
           <Archive className="h-5 w-5" />
           Archived
         </NavLink>
