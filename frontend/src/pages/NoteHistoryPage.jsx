@@ -9,6 +9,7 @@ import { EmptyState } from '../components/common/EmptyState.jsx';
 import { Pagination } from '../components/common/Pagination.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { DiffField } from '../components/notes/DiffHighlight.jsx';
+import { NoteContent } from '../components/notes/NoteContent.jsx';
 import { formatDate } from '../utils/formatDate.js';
 import { hasDiffChanges, diffText } from '../utils/diffText.js';
 import { toast } from 'react-toastify';
@@ -135,9 +136,10 @@ const NoteHistoryPage = () => {
                       </p>
                       <h3 className="mt-2 text-lg font-semibold">{version.title}</h3>
                       {!isSelected && (
-                        <p className="mt-3 line-clamp-4 text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                          {version.content}
-                        </p>
+                        <NoteContent
+                          content={version.content}
+                          className="mt-3 line-clamp-4 text-base leading-relaxed text-gray-500 dark:text-gray-400"
+                        />
                       )}
                     </section>
                     <Button

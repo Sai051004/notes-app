@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Archive, Clock, History, Tag } from 'lucide-react';
 import { formatRelative } from '../../utils/formatDate.js';
+import { NoteContent } from './NoteContent.jsx';
 
 export const NoteCard = ({ note, square = false }) => (
   <article
@@ -18,13 +19,12 @@ export const NoteCard = ({ note, square = false }) => (
         </h3>
         {note.isArchived && <Archive className="h-4 w-4 shrink-0 text-amber-500" />}
       </header>
-      <p
+      <NoteContent
+        content={note.content}
         className={`mt-2 text-sm text-gray-500 dark:text-gray-400 ${
           square ? 'line-clamp-5 flex-1' : 'line-clamp-2'
         }`}
-      >
-        {note.content || 'No content'}
-      </p>
+      />
       {note.tags?.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {note.tags.slice(0, 3).map((tag) => (
