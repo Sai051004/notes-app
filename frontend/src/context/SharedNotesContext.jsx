@@ -21,19 +21,22 @@ export const SharedNotesProvider = ({ children }) => {
     try {
       await noteService.markSharedAsRead();
       setUnreadCount(0);
+      return true;
     } catch {
-      /* keep badge until next successful refresh */
+      return false;
     }
   }, []);
 
   useEffect(() => {
-    refreshUnreadCount();
-  }, [refreshUnreadCount, location.pathname]);
+    if (location.pathname === '/shared') {
+      markAllAsRead();
+      return undefined;
+    }
 
-  useEffect(() => {
+    refreshUnreadCount();
     const interval = setInterval(refreshUnreadCount, 30000);
     return () => clearInterval(interval);
-  }, [refreshUnreadCount]);
+  }, [location.pathname, markAllAsRead, refreshUnreadCount]);
 
   return (
     <SharedNotesContext.Provider value={{ unreadCount, refreshUnreadCount, markAllAsRead }}>

@@ -39,7 +39,11 @@ const SharedNotesPage = () => {
 
   useEffect(() => {
     if (!loading) {
-      markAllAsRead();
+      markAllAsRead().then((ok) => {
+        if (ok) {
+          setNotes((prev) => prev.map((note) => ({ ...note, isUnread: false })));
+        }
+      });
     }
   }, [loading, markAllAsRead]);
 

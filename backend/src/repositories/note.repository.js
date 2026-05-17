@@ -1,6 +1,9 @@
+import mongoose from 'mongoose';
 import Note from '../models/Note.js';
 
 const notePopulate = { path: 'owner', select: 'email' };
+
+const toObjectId = (userId) => new mongoose.Types.ObjectId(userId.toString());
 
 class NoteRepository {
   async create(data) {
@@ -77,11 +80,12 @@ class NoteRepository {
   }
 
   async countUnreadSharedWithUser(userId) {
+    const userObjectId = toObjectId(userId);
     return Note.countDocuments({
-      owner: { $ne: userId },
+      owner: { $ne: userObjectId },
       sharedWith: {
         $elemMatch: {
-          user: userId,
+          user: userObjectId,
           $or: [{ readAt: { $exists: false } }, { readAt: null }],
         },
       },
@@ -89,18 +93,30 @@ class NoteRepository {
   }
 
   async markSharedAsReadForUser(userId) {
+    const userObjectId = toObjectId(userId);
     const now = new Date();
-    await Note.updateMany(
-      { owner: { $ne: userId }, 'sharedWith.user': userId },
-      { $set: { 'sharedWith.$[share].readAt': now } },
-      {
-        arrayFilters: [
-          {
-            'share.user': userId,
-            $or: [{ 'share.readAt': { $exists: false } }, { 'share.readAt': null }],
-          },
-        ],
+
+    const notes = await Note.find({
+      owner: { $ne: userObjectId },
+      sharedWith: {
+        $elemMatch: {
+          user: userObjectId,
+          $or: [{ readAt: { $exists: false } }, { readAt: null }],
+        },
       },
+    });
+
+    await Promise.all(
+      notes.map((note) => {
+        const sharedWith = note.sharedWith.map((entry) => {
+          if (!entry.user.equals(userObjectId)) return entry;
+          if (entry.readAt) return entry;
+          const plain = typeof entry.toObject === 'function' ? entry.toObject() : { ...entry };
+          return { ...plain, readAt: now };
+        });
+
+        return Note.updateOne({ _id: note._id }, { $set: { sharedWith } });
+      }),
     );
   }
 
