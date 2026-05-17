@@ -10,7 +10,7 @@ import assignmentSearchRoutes from './routes/assignment.search.routes.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 import { requestLogger } from './middlewares/requestLogger.js';
 import { apiLimiter } from './middlewares/rateLimiter.js';
-import { openApiSpec } from './docs/openapi.js';
+import { getOpenApiSpec } from './docs/openapi.js';
 import { sendSuccess } from './utils/response.js';
 import { getAbout } from './controllers/about.controller.js';
 
@@ -18,10 +18,30 @@ const app = express();
 
 app.set('trust proxy', 1);
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'", 'http:', 'https:'],
+      },
+    },
+  }),
+);
+
 app.use(
   cors({
-    origin: config.corsOrigin,
+    origin: (origin, callback) => {
+      if (!origin || config.corsOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(null, config.isProduction ? false : true);
+    },
     credentials: true,
   }),
 );
@@ -30,7 +50,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(mongoSanitize());
 
-app.use(apiLimiter);
+const getBaseUrl = (req) => `${req.protocol}://${req.get('host')}`;
 
 app.get('/health', (_req, res) => {
   sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() }, 'Service is healthy');
@@ -38,11 +58,23 @@ app.get('/health', (_req, res) => {
 
 app.get('/about', getAbout);
 
-app.get('/openapi.json', (_req, res) => {
-  res.json(openApiSpec);
+app.get('/openapi.json', (req, res) => {
+  res.json(getOpenApiSpec(getBaseUrl(req)));
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec, { explorer: true }));
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(undefined, {
+    explorer: true,
+    swaggerOptions: {
+      url: '/openapi.json',
+      persistAuthorization: true,
+    },
+  }),
+);
+
+app.use(apiLimiter);
 
 app.use(assignmentAuthRoutes);
 app.use('/notes', assignmentNotesRoutes);

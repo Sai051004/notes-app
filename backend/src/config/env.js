@@ -31,6 +31,19 @@ export const config = {
   get corsOrigin() {
     return process.env.CORS_ORIGIN || 'http://localhost:5173';
   },
+  get corsOrigins() {
+    const port = this.port;
+    const defaults = [
+      'http://localhost:5173',
+      `http://localhost:${port}`,
+      `http://127.0.0.1:${port}`,
+    ];
+    const fromEnv = (process.env.CORS_ORIGIN || '')
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean);
+    return [...new Set([...fromEnv, ...defaults])];
+  },
   get rateLimit() {
     return {
       windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 900000,

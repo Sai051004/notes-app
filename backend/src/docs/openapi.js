@@ -1,11 +1,10 @@
-export const openApiSpec = {
+const openApiBase = {
   openapi: '3.0.3',
   info: {
     title: 'Notes API',
     version: '1.0.0',
     description: 'Multi-user notes service REST API',
   },
-  servers: [{ url: 'http://localhost:5000', description: 'Development' }],
   components: {
     securitySchemes: {
       bearerAuth: {
@@ -64,6 +63,17 @@ export const openApiSpec = {
         type: 'object',
         properties: {
           message: { type: 'string' },
+        },
+      },
+      AboutResponse: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' },
+          email: { type: 'string', format: 'email' },
+          'my features': {
+            type: 'object',
+            additionalProperties: { type: 'string' },
+          },
         },
       },
     },
@@ -230,7 +240,16 @@ export const openApiSpec = {
       get: {
         tags: ['About'],
         summary: 'About the API author and features',
-        responses: { 200: { description: 'About information' } },
+        responses: {
+          200: {
+            description: 'About information',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/AboutResponse' },
+              },
+            },
+          },
+        },
       },
     },
     '/openapi.json': {
@@ -242,3 +261,11 @@ export const openApiSpec = {
     },
   },
 };
+
+/** Build spec with the current host so Swagger "Try it out" hits the right server. */
+export const getOpenApiSpec = (baseUrl) => ({
+  ...openApiBase,
+  servers: [{ url: baseUrl, description: 'Current server' }],
+});
+
+export const openApiSpec = getOpenApiSpec('http://localhost:5000');
