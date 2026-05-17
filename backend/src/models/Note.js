@@ -17,6 +17,10 @@ const sharedWithSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    readAt: {
+      type: Date,
+      default: null,
+    },
   },
   { _id: false },
 );

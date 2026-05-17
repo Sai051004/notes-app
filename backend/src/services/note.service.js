@@ -204,6 +204,7 @@ class NoteService {
       user: targetUser._id,
       permission,
       sharedAt: new Date(),
+      readAt: null,
     });
   }
 
@@ -218,15 +219,44 @@ class NoteService {
     };
   }
 
+  #getShareForUser(note, userId) {
+    const uid = toUserId(userId);
+    return note.sharedWith?.find(
+      (entry) =>
+        toUserId(entry.user?._id) === uid ||
+        toUserId(entry.user) === uid,
+    );
+  }
+
+  #enrichSharedNote(note, userId) {
+    const share = this.#getShareForUser(note, userId);
+    return {
+      ...note,
+      sharedBy: note.owner?.email || null,
+      sharedAt: share?.sharedAt || null,
+      isUnread: !share?.readAt,
+    };
+  }
+
   async getSharedNotes(userId, query) {
     const uid = toUserId(userId);
     const { page, limit, skip } = parsePagination(query);
     const { notes, total } = await noteRepository.findSharedWithUser(uid, { skip, limit });
 
     return {
-      notes,
+      notes: notes.map((note) => this.#enrichSharedNote(note, uid)),
       meta: buildPaginationMeta(total, page, limit),
     };
+  }
+
+  async getSharedUnreadCount(userId) {
+    const count = await noteRepository.countUnreadSharedWithUser(toUserId(userId));
+    return { count };
+  }
+
+  async markSharedNotesAsRead(userId) {
+    await noteRepository.markSharedAsReadForUser(toUserId(userId));
+    return { count: 0 };
   }
 
   async getVersionHistory(noteId, userId, query) {

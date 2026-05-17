@@ -51,3 +51,13 @@ export const getSharedNotes = asyncHandler(async (req, res) => {
   const result = await noteService.getSharedNotes(req.user._id, req.query);
   sendSuccess(res, result.notes, 'Shared notes retrieved', HTTP_STATUS.OK, result.meta);
 });
+
+export const getSharedUnreadCount = asyncHandler(async (req, res) => {
+  const result = await noteService.getSharedUnreadCount(req.user._id);
+  sendSuccess(res, result, 'Unread shared notes count');
+});
+
+export const markSharedNotesAsRead = asyncHandler(async (req, res) => {
+  const result = await noteService.markSharedNotesAsRead(req.user._id);
+  sendSuccess(res, result, 'Shared notes marked as read');
+});

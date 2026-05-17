@@ -12,6 +12,7 @@ import {
   Sun,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { useSharedNotes } from '../../context/SharedNotesContext.jsx';
 import { useTheme } from '../../context/ThemeContext.jsx';
 
 const navLinkClass = ({ isActive }) =>
@@ -24,6 +25,7 @@ const navLinkClass = ({ isActive }) =>
 export const Sidebar = ({ onNavigate }) => {
   const { user, logout } = useAuth();
   const { darkMode, toggleTheme } = useTheme();
+  const { unreadCount } = useSharedNotes();
   const location = useLocation();
 
   const isArchivedView =
@@ -49,8 +51,16 @@ export const Sidebar = ({ onNavigate }) => {
           New Note
         </NavLink>
         <NavLink to="/shared" className={navLinkClass} onClick={handleNav}>
-          <Share2 className="h-5 w-5" />
-          Shared Notes
+          <Share2 className="h-5 w-5 shrink-0" />
+          <span className="min-w-0 flex-1">Shared Notes</span>
+          {unreadCount > 0 && (
+            <span
+              className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white"
+              aria-label={`${unreadCount} new shared notes`}
+            >
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
         </NavLink>
         <NavLink to="/search" className={navLinkClass} onClick={handleNav}>
           <Search className="h-5 w-5" />

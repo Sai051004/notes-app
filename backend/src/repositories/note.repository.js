@@ -76,6 +76,34 @@ class NoteRepository {
     return { notes, total };
   }
 
+  async countUnreadSharedWithUser(userId) {
+    return Note.countDocuments({
+      owner: { $ne: userId },
+      sharedWith: {
+        $elemMatch: {
+          user: userId,
+          $or: [{ readAt: { $exists: false } }, { readAt: null }],
+        },
+      },
+    });
+  }
+
+  async markSharedAsReadForUser(userId) {
+    const now = new Date();
+    await Note.updateMany(
+      { owner: { $ne: userId }, 'sharedWith.user': userId },
+      { $set: { 'sharedWith.$[share].readAt': now } },
+      {
+        arrayFilters: [
+          {
+            'share.user': userId,
+            $or: [{ 'share.readAt': { $exists: false } }, { 'share.readAt': null }],
+          },
+        ],
+      },
+    );
+  }
+
   async update(id, data) {
     const { $inc, ...fields } = data;
     const updatePayload = { ...fields };

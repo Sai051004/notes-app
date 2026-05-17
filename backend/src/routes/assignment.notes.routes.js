@@ -14,6 +14,8 @@ const router = Router();
 
 router.use(protect);
 
+router.get('/shared/unread-count', extendedNoteController.getSharedUnreadCount);
+router.post('/shared/mark-read', extendedNoteController.markSharedNotesAsRead);
 router.get('/shared', validate(noteQuerySchema, 'query'), extendedNoteController.getSharedNotes);
 router.get('/', validate(noteQuerySchema, 'query'), noteController.getNotes);
 router.post('/', validate(assignmentCreateNoteSchema), noteController.createNote);

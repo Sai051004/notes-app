@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Archive, Clock, History, Tag } from 'lucide-react';
+import { Archive, Clock, History, Share2, Tag } from 'lucide-react';
 import { formatRelative } from '../../utils/formatDate.js';
 import { NoteContent } from './NoteContent.jsx';
 
@@ -17,8 +17,21 @@ export const NoteCard = ({ note, square = false }) => (
         <h3 className="line-clamp-2 font-semibold text-gray-900 group-hover:text-primary-600 dark:text-gray-100 dark:group-hover:text-primary-400">
           {note.title}
         </h3>
-        {note.isArchived && <Archive className="h-4 w-4 shrink-0 text-amber-500" />}
+        <span className="flex shrink-0 items-center gap-1">
+          {note.isUnread && (
+            <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+              New
+            </span>
+          )}
+          {note.isArchived && <Archive className="h-4 w-4 text-amber-500" />}
+        </span>
       </header>
+      {note.sharedBy && (
+        <p className="mt-1 flex items-center gap-1 text-xs font-medium text-primary-600 dark:text-primary-400">
+          <Share2 className="h-3 w-3 shrink-0" />
+          Shared by {note.sharedBy}
+        </p>
+      )}
       <NoteContent
         content={note.content}
         className={`mt-2 text-sm text-gray-500 dark:text-gray-400 ${

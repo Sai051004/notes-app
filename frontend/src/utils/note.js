@@ -11,6 +11,9 @@ export const normalizeNote = (note) => {
     updatedAt: note.updated_at || note.updatedAt,
     created_at: note.created_at || note.createdAt,
     updated_at: note.updated_at || note.updatedAt,
+    sharedBy: note.sharedBy ?? note.owner?.email,
+    sharedAt: note.sharedAt,
+    isUnread: note.isUnread,
   };
 };
 
